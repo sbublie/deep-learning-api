@@ -1,0 +1,243 @@
+openapi: 3.0.3
+info:
+  contact:
+    email: mail@domain.com
+    name: name
+  description: An API for accessing Deep Learning data
+  title: Deep Learning API
+  version: 0.0.1
+servers:
+- url: http://localhost:8080
+paths:
+  /validation/batches:
+    get:
+      operationId: validation_batches_get
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Batch'
+                type: array
+          description: Meta data of a model
+      tags:
+      - Validation Pipeline
+      x-openapi-router-controller: openapi_server.controllers.validation_pipeline_controller
+  /validation/batches/{batch-id}/classes:
+    get:
+      operationId: validation_batches_batch_id_classes_get
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Class'
+                type: array
+          description: Meta data of a model
+      tags:
+      - Validation Pipeline
+      x-openapi-router-controller: openapi_server.controllers.validation_pipeline_controller
+  /validation/models:
+    get:
+      operationId: validation_models_get
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Model'
+                type: array
+          description: A list of available models
+      tags:
+      - Validation Pipeline
+      x-openapi-router-controller: openapi_server.controllers.validation_pipeline_controller
+  /validation/models/{model-id}:
+    get:
+      operationId: validation_models_model_id_get
+      parameters:
+      - description: ID of model
+        explode: false
+        in: path
+        name: model-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Model'
+          description: Meta data of a model
+      tags:
+      - Validation Pipeline
+      x-openapi-router-controller: openapi_server.controllers.validation_pipeline_controller
+  /validation/models/{model-id}/{batch-id}/classes:
+    get:
+      operationId: validation_models_model_id_batch_id_classes_get
+      parameters:
+      - description: ID of model
+        explode: false
+        in: path
+        name: model-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: ID of batch
+        explode: false
+        in: path
+        name: batch-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Class'
+                type: array
+          description: Meta data of a model
+      tags:
+      - Validation Pipeline
+      x-openapi-router-controller: openapi_server.controllers.validation_pipeline_controller
+  /validation/models/{model-id}/{batch-id}/ground_truth:
+    get:
+      operationId: validation_models_model_id_batch_id_ground_truth_get
+      parameters:
+      - description: ID of model
+        explode: false
+        in: path
+        name: model-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: ID of batch
+        explode: false
+        in: path
+        name: batch-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationResult'
+          description: Result data of a model
+      tags:
+      - Validation Pipeline
+      x-openapi-router-controller: openapi_server.controllers.validation_pipeline_controller
+  /validation/models/{model-id}/{batch-id}/predictions:
+    get:
+      operationId: validation_models_model_id_batch_id_predictions_get
+      parameters:
+      - description: ID of model
+        explode: false
+        in: path
+        name: model-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: ID of batch
+        explode: false
+        in: path
+        name: batch-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationResult'
+          description: Result data of a model
+      tags:
+      - Validation Pipeline
+      x-openapi-router-controller: openapi_server.controllers.validation_pipeline_controller
+  /validation/models/{model-id}/{batch-id}/result:
+    get:
+      operationId: validation_models_model_id_batch_id_result_get
+      parameters:
+      - description: ID of model
+        explode: false
+        in: path
+        name: model-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: ID of batch
+        explode: false
+        in: path
+        name: batch-id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationResult'
+          description: Result data of a model
+      tags:
+      - Validation Pipeline
+      x-openapi-router-controller: openapi_server.controllers.validation_pipeline_controller
+components:
+  schemas:
+    Class:
+      example:
+        name: name
+      properties:
+        name:
+          title: name
+          type: string
+      title: Class
+      type: object
+    Model:
+      example:
+        name: name
+        time: time
+      properties:
+        name:
+          title: name
+          type: string
+        time:
+          title: time
+          type: string
+      title: Model
+      type: object
+    Batch:
+      example:
+        name: name
+      properties:
+        name:
+          title: name
+          type: string
+      title: Batch
+      type: object
+    ValidationResult:
+      example:
+        accuracy: 0
+      properties:
+        accuracy:
+          format: int32
+          title: accuracy
+          type: integer
+      title: ValidationResult
+      type: object

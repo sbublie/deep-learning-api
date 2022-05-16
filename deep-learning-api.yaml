@@ -1,0 +1,209 @@
+openapi: 3.0.3
+info:
+  title: Deep Learning API
+  description: >-
+    An API for accessing Deep Learning data
+  version: 0.0.1
+  contact:
+    name: name
+    email: mail@domain.com
+servers:
+  - url: http://localhost:8080
+paths:
+  /validation/models:
+    get:
+      tags: 
+        - Validation Pipeline
+      responses:
+        '200': 
+          description: A list of available models
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Model'
+                  
+  /validation/batches:
+    get:
+      tags: 
+      - Validation Pipeline
+      responses:
+        '200':
+          description: Meta data of a model
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Batch'
+  /validation/batches/{batch-id}/classes:
+    get:
+      tags: 
+      - Validation Pipeline
+      responses:
+        '200':
+          description: Meta data of a model
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Class'
+                  
+  /validation/models/{model-id}:
+    get:
+      tags: 
+        - Validation Pipeline
+      responses:
+        '200':
+          description: Meta data of a model
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Model'
+    parameters:
+    - name: model-id
+      in: path
+      description: ID of model
+      required: true
+      schema:
+        type: string
+      style: simple 
+      
+  /validation/models/{model-id}/{batch-id}/classes:
+    get:
+      tags: 
+      - Validation Pipeline
+      responses:
+        '200':
+          description: Meta data of a model
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Class'
+    parameters:
+    - name: model-id
+      in: path
+      description: ID of model
+      required: true
+      schema:
+        type: string
+      style: simple
+    - name: batch-id
+      in: path
+      description: ID of batch
+      required: true
+      schema:
+        type: string
+      style: simple
+
+  /validation/models/{model-id}/{batch-id}/predictions:
+    get:
+      tags: 
+      - Validation Pipeline
+      responses:
+        '200':
+          description: Result data of a model
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationResult'
+    parameters:
+    - name: model-id
+      in: path
+      description: ID of model
+      required: true
+      schema:
+        type: string
+      style: simple
+    - name: batch-id
+      in: path
+      description: ID of batch
+      required: true
+      schema:
+        type: string
+      style: simple
+      
+  /validation/models/{model-id}/{batch-id}/ground_truth:
+    get:
+      tags: 
+      - Validation Pipeline
+      responses:
+        '200':
+          description: Result data of a model
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationResult'
+    parameters:
+    - name: model-id
+      in: path
+      description: ID of model
+      required: true
+      schema:
+        type: string
+      style: simple
+    - name: batch-id
+      in: path
+      description: ID of batch
+      required: true
+      schema:
+        type: string
+      style: simple
+      
+  /validation/models/{model-id}/{batch-id}/result:
+    get:
+      tags: 
+      - Validation Pipeline
+      responses:
+        '200':
+          description: Result data of a model
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationResult'
+    parameters:
+    - name: model-id
+      in: path
+      description: ID of model
+      required: true
+      schema:
+        type: string
+      style: simple
+    - name: batch-id
+      in: path
+      description: ID of batch
+      required: true
+      schema:
+        type: string
+      style: simple
+      
+components:
+  schemas:
+    Class:
+      type: object
+      properties:
+        name:
+          type: string
+    Model:
+      type: object
+      properties:
+        name:
+          type: string
+        time:
+          type: string
+    Batch:
+      type: object
+      properties:
+        name:
+          type: string
+    ValidationResult:
+      type: object
+      properties:
+        accuracy:
+          type: integer
+          format: int32
+    
