@@ -23,7 +23,7 @@ setup(
     name=NAME,
     version=VERSION,
     description="Deep Learning API",
-    author_email="mail@domain.com",
+    author_email="",
     url="",
     keywords=["OpenAPI", "Deep Learning API"],
     install_requires=REQUIRES,

@@ -5,11 +5,24 @@ info:
     An API for accessing Deep Learning data
   version: 0.0.1
   contact:
-    name: name
-    email: mail@domain.com
+    name: Sebastian Bublies
 servers:
   - url: http://localhost:8080
 paths:
+  /validation/status:
+    get:
+      tags: 
+        - Validation Pipeline
+      responses:
+        '200': 
+          description: Status of all validation data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Status'
+                  
   /validation/models:
     get:
       tags: 
@@ -30,152 +43,136 @@ paths:
       - Validation Pipeline
       responses:
         '200':
-          description: Meta data of a model
+          description: A list of available batches
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Batch'
-  /validation/batches/{batch-id}/classes:
+
+  /validation/batches/{batch-name}/classes:
     get:
       tags: 
       - Validation Pipeline
       responses:
         '200':
-          description: Meta data of a model
+          description: A list of all classes tested in a batch
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Class'
+    parameters:
+    - name: batch-name
+      in: path
+      description: Name of batch
+      required: true
+      schema:
+        type: string
+      style: simple 
                   
-  /validation/models/{model-id}:
+  /validation/models/{model-name}:
     get:
       tags: 
         - Validation Pipeline
       responses:
         '200':
-          description: Meta data of a model
+          description: Meta data of a specific model
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Model'
     parameters:
-    - name: model-id
+    - name: model-name
       in: path
-      description: ID of model
+      description: Name of model
       required: true
       schema:
         type: string
       style: simple 
       
-  /validation/models/{model-id}/{batch-id}/classes:
+  /validation/models/{model-name}/{batch-name}/result:
     get:
       tags: 
       - Validation Pipeline
       responses:
         '200':
-          description: Meta data of a model
+          description: Result data of a model
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Class'
+                $ref: '#/components/schemas/ValidationResult'
     parameters:
-    - name: model-id
+    - name: model-name
       in: path
-      description: ID of model
+      description: Name of model
       required: true
       schema:
         type: string
       style: simple
-    - name: batch-id
+    - name: batch-name
       in: path
-      description: ID of batch
+      description: Name of batch
       required: true
       schema:
         type: string
       style: simple
 
-  /validation/models/{model-id}/{batch-id}/predictions:
+  /validation/models/{model-name}/{batch-name}/result/predictions:
     get:
       tags: 
       - Validation Pipeline
       responses:
         '200':
-          description: Result data of a model
+          description: Prediction data of a model
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ValidationResult'
+                type: array
+                items:
+                  $ref: '#/components/schemas/PredictionResult'
     parameters:
-    - name: model-id
+    - name: model-name
       in: path
-      description: ID of model
+      description: Name of model
       required: true
       schema:
         type: string
       style: simple
-    - name: batch-id
+    - name: batch-name
       in: path
-      description: ID of batch
+      description: Name of batch
       required: true
       schema:
         type: string
       style: simple
-      
-  /validation/models/{model-id}/{batch-id}/ground_truth:
+                  
+  /validation/models/{model-name}/{batch-name}/result/ground-truth:
     get:
       tags: 
       - Validation Pipeline
       responses:
         '200':
-          description: Result data of a model
+          description: Ground truth data of a model
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ValidationResult'
+                type: array
+                items:
+                  $ref: '#/components/schemas/GroundTruthResult'
     parameters:
-    - name: model-id
+    - name: model-name
       in: path
-      description: ID of model
+      description: Name of model
       required: true
       schema:
         type: string
       style: simple
-    - name: batch-id
+    - name: batch-name
       in: path
-      description: ID of batch
-      required: true
-      schema:
-        type: string
-      style: simple
-      
-  /validation/models/{model-id}/{batch-id}/result:
-    get:
-      tags: 
-      - Validation Pipeline
-      responses:
-        '200':
-          description: Result data of a model
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ValidationResult'
-    parameters:
-    - name: model-id
-      in: path
-      description: ID of model
-      required: true
-      schema:
-        type: string
-      style: simple
-    - name: batch-id
-      in: path
-      description: ID of batch
+      description: Name of batch
       required: true
       schema:
         type: string
@@ -195,11 +192,30 @@ components:
           type: string
         time:
           type: string
+    Status:
+      type: object
+      properties:
+        warning:
+          type: boolean
+        message:
+          type: string
     Batch:
       type: object
       properties:
         name:
           type: string
+    PredictionResult:
+      type: object
+      properties:
+        prediction:
+          type: integer
+          format: int32
+    GroundTruthResult:
+      type: object
+      properties:
+        ground_truth:
+          type: integer
+          format: int32
     ValidationResult:
       type: object
       properties:

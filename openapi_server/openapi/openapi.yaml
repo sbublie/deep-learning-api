@@ -1,8 +1,7 @@
 openapi: 3.0.3
 info:
   contact:
-    email: mail@domain.com
-    name: name
+    name: Sebastian Bublies
   description: An API for accessing Deep Learning data
   title: Deep Learning API
   version: 0.0.1
@@ -20,13 +19,22 @@ paths:
                 items:
                   $ref: '#/components/schemas/Batch'
                 type: array
-          description: Meta data of a model
+          description: A list of available batches
       tags:
       - Validation Pipeline
       x-openapi-router-controller: openapi_server.controllers.validation_pipeline_controller
-  /validation/batches/{batch-id}/classes:
+  /validation/batches/{batch-name}/classes:
     get:
-      operationId: validation_batches_batch_id_classes_get
+      operationId: validation_batches_batch_name_classes_get
+      parameters:
+      - description: Name of batch
+        explode: false
+        in: path
+        name: batch-name
+        required: true
+        schema:
+          type: string
+        style: simple
       responses:
         "200":
           content:
@@ -35,7 +43,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/Class'
                 type: array
-          description: Meta data of a model
+          description: A list of all classes tested in a batch
       tags:
       - Validation Pipeline
       x-openapi-router-controller: openapi_server.controllers.validation_pipeline_controller
@@ -54,14 +62,14 @@ paths:
       tags:
       - Validation Pipeline
       x-openapi-router-controller: openapi_server.controllers.validation_pipeline_controller
-  /validation/models/{model-id}:
+  /validation/models/{model-name}:
     get:
-      operationId: validation_models_model_id_get
+      operationId: validation_models_model_name_get
       parameters:
-      - description: ID of model
+      - description: Name of model
         explode: false
         in: path
-        name: model-id
+        name: model-name
         required: true
         schema:
           type: string
@@ -72,26 +80,56 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Model'
-          description: Meta data of a model
+          description: Meta data of a specific model
       tags:
       - Validation Pipeline
       x-openapi-router-controller: openapi_server.controllers.validation_pipeline_controller
-  /validation/models/{model-id}/{batch-id}/classes:
+  /validation/models/{model-name}/{batch-name}/result:
     get:
-      operationId: validation_models_model_id_batch_id_classes_get
+      operationId: validation_models_model_name_batch_name_result_get
       parameters:
-      - description: ID of model
+      - description: Name of model
         explode: false
         in: path
-        name: model-id
+        name: model-name
         required: true
         schema:
           type: string
         style: simple
-      - description: ID of batch
+      - description: Name of batch
         explode: false
         in: path
-        name: batch-id
+        name: batch-name
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationResult'
+          description: Result data of a model
+      tags:
+      - Validation Pipeline
+      x-openapi-router-controller: openapi_server.controllers.validation_pipeline_controller
+  /validation/models/{model-name}/{batch-name}/result/ground-truth:
+    get:
+      operationId: validation_models_model_name_batch_name_result_ground_truth_get
+      parameters:
+      - description: Name of model
+        explode: false
+        in: path
+        name: model-name
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Name of batch
+        explode: false
+        in: path
+        name: batch-name
         required: true
         schema:
           type: string
@@ -102,28 +140,28 @@ paths:
             application/json:
               schema:
                 items:
-                  $ref: '#/components/schemas/Class'
+                  $ref: '#/components/schemas/GroundTruthResult'
                 type: array
-          description: Meta data of a model
+          description: Ground truth data of a model
       tags:
       - Validation Pipeline
       x-openapi-router-controller: openapi_server.controllers.validation_pipeline_controller
-  /validation/models/{model-id}/{batch-id}/ground_truth:
+  /validation/models/{model-name}/{batch-name}/result/predictions:
     get:
-      operationId: validation_models_model_id_batch_id_ground_truth_get
+      operationId: validation_models_model_name_batch_name_result_predictions_get
       parameters:
-      - description: ID of model
+      - description: Name of model
         explode: false
         in: path
-        name: model-id
+        name: model-name
         required: true
         schema:
           type: string
         style: simple
-      - description: ID of batch
+      - description: Name of batch
         explode: false
         in: path
-        name: batch-id
+        name: batch-name
         required: true
         schema:
           type: string
@@ -133,68 +171,25 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ValidationResult'
-          description: Result data of a model
+                items:
+                  $ref: '#/components/schemas/PredictionResult'
+                type: array
+          description: Prediction data of a model
       tags:
       - Validation Pipeline
       x-openapi-router-controller: openapi_server.controllers.validation_pipeline_controller
-  /validation/models/{model-id}/{batch-id}/predictions:
+  /validation/status:
     get:
-      operationId: validation_models_model_id_batch_id_predictions_get
-      parameters:
-      - description: ID of model
-        explode: false
-        in: path
-        name: model-id
-        required: true
-        schema:
-          type: string
-        style: simple
-      - description: ID of batch
-        explode: false
-        in: path
-        name: batch-id
-        required: true
-        schema:
-          type: string
-        style: simple
+      operationId: validation_status_get
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ValidationResult'
-          description: Result data of a model
-      tags:
-      - Validation Pipeline
-      x-openapi-router-controller: openapi_server.controllers.validation_pipeline_controller
-  /validation/models/{model-id}/{batch-id}/result:
-    get:
-      operationId: validation_models_model_id_batch_id_result_get
-      parameters:
-      - description: ID of model
-        explode: false
-        in: path
-        name: model-id
-        required: true
-        schema:
-          type: string
-        style: simple
-      - description: ID of batch
-        explode: false
-        in: path
-        name: batch-id
-        required: true
-        schema:
-          type: string
-        style: simple
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ValidationResult'
-          description: Result data of a model
+                items:
+                  $ref: '#/components/schemas/Status'
+                type: array
+          description: Status of all validation data
       tags:
       - Validation Pipeline
       x-openapi-router-controller: openapi_server.controllers.validation_pipeline_controller
@@ -222,6 +217,19 @@ components:
           type: string
       title: Model
       type: object
+    Status:
+      example:
+        warning: true
+        message: message
+      properties:
+        warning:
+          title: warning
+          type: boolean
+        message:
+          title: message
+          type: string
+      title: Status
+      type: object
     Batch:
       example:
         name: name
@@ -230,6 +238,26 @@ components:
           title: name
           type: string
       title: Batch
+      type: object
+    PredictionResult:
+      example:
+        prediction: 0
+      properties:
+        prediction:
+          format: int32
+          title: prediction
+          type: integer
+      title: PredictionResult
+      type: object
+    GroundTruthResult:
+      example:
+        ground_truth: 0
+      properties:
+        ground_truth:
+          format: int32
+          title: ground_truth
+          type: integer
+      title: GroundTruthResult
       type: object
     ValidationResult:
       example:
