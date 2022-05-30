@@ -4,7 +4,9 @@ werkzeug == 0.16.1; python_version=="3.5" or python_version=="3.4"
 swagger-ui-bundle >= 0.0.2
 python_dateutil >= 2.6.0
 setuptools >= 21.0.0
-Flask == 1.1.2
+Flask == 2.0.0
+# https://stackoverflow.com/questions/72411825/jupyter-notebook-in-vscode-with-virtual-environment-fails-to-import-tensorflow
+protobuf<=3.20.1
 numpy
 tensorflow==2.8.0; python_version>="3.10"
 tensorflow==2.7.0; python_version<="3.9"

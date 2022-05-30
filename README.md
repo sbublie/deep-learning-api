@@ -10,7 +10,7 @@ The metadata and results of this operation can be accessed via GET requests at t
 The app uses the [Connexion](https://github.com/zalando/connexion) library on top of Flask.
 
 ## Requirements
-Python 3.5.2+
+Python 3.5.2+ (Tested only on Python 3.10)
 
 ## Usage
 To run the server, please execute the following from the root directory:
