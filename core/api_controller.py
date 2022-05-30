@@ -12,32 +12,38 @@ from openapi_server.models.model_class import ModelClass  # noqa: E501
 from openapi_server.models.prediction_result import PredictionResult  # noqa: E501
 from openapi_server.models.status import Status  # noqa: E501
 from openapi_server.models.validation_result import ValidationResult  # noqa: E501
-from openapi_server import util
 
 
 class ApiController:
     def __init__(self):
 
+        self.results, self.model_names, self.batch_names = [], [], []
+
+        # Scan the input folder for models and batches
         model_paths = [ f.path for f in os.scandir("./input/models/") if f.is_dir() ]
         batch_paths = [ f.path for f in os.scandir("./input/batches/") if f.is_dir() ]
-        
-        self.results = []
-        self.model_names = []
-        self.batch_names = []
 
+        # TODO: Handle empty input directory
         for model_path in model_paths:
             
+            # TODO: Refine model naming convention
+            # Extract model name from path
             model_name = model_path.split('/')[-1]
+            # Load/create Tensorflow model
             model = tf.keras.models.load_model(model_path)
             
+            # TODO: Handle empty input directory
             for batch_path in batch_paths:
-
+                
+                # TODO: Refine model naming convention
+                # Extract batch name from path
                 batch_name = batch_path.split("/")[-1]
                 
                 batch_size = 32
                 img_height = 224
                 img_width = 224
 
+                # Create test dataset
                 test_ds = tf.keras.utils.image_dataset_from_directory(
                 batch_path,
                 seed=123,
@@ -46,7 +52,7 @@ class ApiController:
                 shuffle=False
                 )
 
-                # Get information on your classes
+                # Get information on classes
                 class_names = np.array(test_ds.class_names)
 
                 # Get the ground truth labels
@@ -59,12 +65,14 @@ class ApiController:
                 test_ds = test_ds.map(lambda x, y: (normalization_layer(x), y)) 
                 predictions = model.predict(test_ds)
                 predictions = np.argmax(predictions, axis=1)
-
+                
+                # Use wrapper class to store results in list
                 self.results.append(ResultWrapper(model_name, batch_name, class_names, predictions, ground_truth))
+                # Add model/batch names to lists (for identifying duplicates) 
                 self.model_names.append(model_name)
                 self.batch_names.append(batch_name)
 
-    
+    # --- Helper methods ---
     def _accuracy(self, predictions, ground_truth):
         metric = tf.keras.metrics.Accuracy()
         metric.update_state(predictions, ground_truth)
@@ -82,7 +90,10 @@ class ApiController:
                 return
         models.append(Model(model_name))
 
+
     # --- Methods for API endpoints ---
+    # Use the imported models from openapi_server to provide data from the wrapper class to the endpoints  
+
     def validation_status_get(self):
         warnings = []
         for result in self.results:
@@ -126,13 +137,12 @@ class ApiController:
             if model_name == result.model_name and batch_name == result.batch_name:
                 return PredictionResult(result.predictions.tolist())
         
-    
     def validation_models_model_name_batch_name_result_ground_truth_get(self, model_name, batch_name):
         for result in self.results:
             if model_name == result.model_name and batch_name == result.batch_name:
                 return GroundTruthResult(result.ground_truth.tolist())
         return 'Not Found', 404
-    
+
 class ResultWrapper:
     def __init__(self, model_name, batch_name, classes, predications, ground_truth) -> None:
         self.model_name = model_name
