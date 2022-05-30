@@ -18,8 +18,8 @@ from openapi_server import util
 class ApiController:
     def __init__(self):
 
-        model_paths = [ f.path for f in os.scandir("./input/model/") if f.is_dir() ]
-        batch_paths = [ f.path for f in os.scandir("./input/batch/") if f.is_dir() ]
+        model_paths = [ f.path for f in os.scandir("./input/models/") if f.is_dir() ]
+        batch_paths = [ f.path for f in os.scandir("./input/batches/") if f.is_dir() ]
         
         self.results = []
         self.model_names = []

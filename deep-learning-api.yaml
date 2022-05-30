@@ -5,7 +5,7 @@ info:
     An API for accessing Deep Learning data
   version: 0.0.1
   contact:
-    name: Sebastian Bublies
+    name: Sebastian
 servers:
   - url: http://localhost:8080
 paths:
